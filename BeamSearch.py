@@ -1,32 +1,14 @@
-import heapq
 import StringDouble
-import ExtractGraph
-from heapq import heappush, heapreplace
+from math import *
+from heapq import *
 
-import math
-
-
-class Node:
-    tokens = []
-    prob = 0.0
-
-    def __init__(self, tokens, prob):
-        self.tokens = tokens
-        self.prob = prob
-
-    def __lt__(self, other):
-        if self.prob < other.prob:
-            return True
-        else:
-            return False
 
 class BeamSearch:
-
-    graph = []
+    k_heap = []
+    graph = {}
 
     def __init__(self, input_graph):
         self.graph = input_graph
-        self.topK = []
         return
 
     def beamSearchV1(self, pre_words, beamK, maxToken):
@@ -34,41 +16,35 @@ class BeamSearch:
         return self.beamSearchV2(pre_words, beamK, 0, maxToken)
 
     def beamSearchV2(self, pre_words, beamK, param_lambda, maxToken):
-    	# Beam search with sentence length normalization.
-        # heappush(self.heap, StringDouble.StringDouble(pre_words, 1))
-        for i in range(len(pre_words.split()), maxToken):
-            # print(self.heap)
-            self.search(10, beamK)
-        return self.heap[-1]
+        self.k_heap = []
+        length = len(pre_words.split())
+        heappush(self.k_heap, StringDouble.StringDouble(pre_words, 0))
 
+        for i in range(length, maxToken):
+            top_heap = []
+            for sentence in self.k_heap:
+                tail_word = sentence.string.split()[-1]
 
+                # if reach end of a sentence
+                if tail_word not in self.graph.graph:
+                    BeamSearch.heap_add(top_heap, beamK, sentence)
+                    continue
+                else:
+                    head_words = self.graph.graph[tail_word]
 
+                for head_word in head_words[:min(len(head_words), beamK)]:
+                    new_sentence = sentence.string + " " + head_word.string
+                    new_score = ((pow(i, param_lambda) * sentence.score) + log(
+                        head_word.score)) / pow(i + 1, param_lambda)
+                    new_string_double = StringDouble.StringDouble(new_sentence, new_score)
+                    BeamSearch.heap_add(top_heap, beamK, new_string_double)
+            self.k_heap = top_heap
 
+        return nlargest(1, self.k_heap)[0]
 
-        sentence = ""
-        probability = 0.0
-        # use a queue to do the BFS
-        queue = [Node(pre_words.split(' '), 1.0)]
-        while len(queue[0].tokens) < maxToken:
-            while queue:
-                current = queue.pop()
-                if current.tokens[-1] in self.graph.graph:
-                    for key in self.graph.graph[current.tokens[-1]]:
-                        newNode = Node(current.tokens[:] + [key],
-                                       current.prob * self.graph.graph[current.tokens[-1]][key])
-                        if len(self.topK) < beamK:
-                            heapq.heappush(self.topK, newNode)
-                        else:
-                            if newNode.prob > self.topK[0].prob:
-                                heapq.heapreplace(self.topK, newNode)
-            for node in self.topK:
-                queue.append(node)
-            self.topK = []
-
-        for node in queue:
-            if node.prob > probability:
-                sentence = ' '.join(node.tokens)
-                probability = node.prob
-        # print(probability)
-        probability = (math.log(probability)) / math.pow(len(sentence), param_lambda)
-        return StringDouble.StringDouble(sentence, probability)
+    @staticmethod
+    def heap_add(top_heap, beamK, string_double):
+        if len(top_heap) < beamK:
+            heappush(top_heap, string_double)
+        elif string_double > top_heap[0]:
+            heapreplace(top_heap, string_double)

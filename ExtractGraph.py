@@ -1,7 +1,10 @@
+import StringDouble
+
+
 class ExtractGraph:
     # key is head word; value stores next word and corresponding probability.
+    counts = {}
     graph = {}
-
     sentences_add = "data\\assign1_sentences.txt"
 
     def __init__(self):
@@ -9,30 +12,38 @@ class ExtractGraph:
         self.file = open(self.sentences_add, "r")
         for sentence in self.file:
             words = sentence.split()
-            self.incrementCount(words)
+            self.countWords(words)
 
-        self.computeProbabilities()
+        self.getProbabilities()
 
     def getProb(self, head_word, tail_word):
-        if head_word in self.graph and tail_word in self.graph[head_word]:
-            return self.graph[head_word][tail_word]
+        for word in self.graph[head_word]:
+            if word == tail_word:
+                return word.score
         return 0.0
 
-    def incrementCount(self, words):
+    def countWords(self, words):
         head_word = words[0]
         for tail_word in words[1:]:
-            if head_word not in self.graph:
-                self.graph[head_word] = {}
-            if tail_word in self.graph[head_word]:
-                self.graph[head_word][tail_word] += 1
+            if head_word not in self.counts:
+                self.counts[head_word] = {tail_word: 0}
+            if tail_word in self.counts[head_word]:
+                self.counts[head_word][tail_word] += 1
             else:
-                self.graph[head_word][tail_word] = 1
+                self.counts[head_word][tail_word] = 1
             head_word = tail_word
 
-    def computeProbabilities(self):
-        for head_word in self.graph.keys():
+    def getProbabilities(self):
+        for head_word in self.counts:
             total = 0
-            for tail_word in self.graph[head_word].keys():
-                total += self.graph[head_word][tail_word]
-            for tail_word in self.graph[head_word].keys():
-                self.graph[head_word][tail_word] = self.graph[head_word][tail_word] / total
+            temp = []
+
+            for tail_word in self.counts[head_word]:
+                total += self.counts[head_word][tail_word]
+
+            for tail_word in self.counts[head_word]:
+                self.counts[head_word][tail_word] /= total
+                temp.append(StringDouble.StringDouble(tail_word, self.counts[head_word][tail_word]))
+
+            temp.sort(key=lambda x: x.score, reverse=True)
+            self.graph[head_word] = temp
