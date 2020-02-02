@@ -4,7 +4,7 @@ Implemented beam search to find all probable complete sentences given a prefix o
 
 
 Output:
-
+```
 The probability of "Water" appearing after "<s>" is 0.0004
 The probability of "<s>" appearing after "Water" is 0.0
 The probability of "economy" appearing after "planned" is 0.046511627906976744
@@ -22,3 +22,4 @@ BeamSearchLengthNormalization
 -1.7517507887440922	<s> He said . </s>
 -0.5895821123870191	<s> Israel and Jordan signed the peace process . </s>
 -1.6638315019736738	<s> It is expected . </s>
+```
