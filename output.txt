@@ -1,0 +1,13 @@
+Current Time = 20:20:59
+Extracting sentences and creating a directed weighted graph
+Graph is ready to use
+The probability of "Water" appearing after "<s>" is 0.0004
+The probability of "<s>" appearing after "Water" is 0
+The probability of "economy" appearing after "planned" is 0.046511627906976744
+The probability of "</s>" appearing after "." is 1.0
+0.0004147670539538984	<s> The two countries . </s>
+0.05208333333333333	<s> Israel and Jordan signed the peace process . </s>
+1.0721351483341972e-05	<s> It is expected to the two countries . </s>
+Current Time = 20:23:08
+
+Process finished with exit code 0
