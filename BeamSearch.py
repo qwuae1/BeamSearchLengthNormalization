@@ -20,8 +20,10 @@ class BeamSearch:
         length = len(pre_words.split())
         heappush(self.k_heap, StringDouble.StringDouble(pre_words, 0))
 
+        # beamSearch in length+1  to max
         for i in range(length, maxToken):
             top_heap = []
+            # finding next word according to the highest K in heap
             for sentence in self.k_heap:
                 tail_word = sentence.string.split()[-1]
 
@@ -31,19 +33,24 @@ class BeamSearch:
                     continue
                 else:
                     head_words = self.graph.graph[tail_word]
-
-                for head_word in head_words[:min(len(head_words), beamK)]:
+                # get the K largest next word if possible
+                end_word = min(len(head_words), beamK)
+                for head_word in head_words[:end_word]:
                     new_sentence = sentence.string + " " + head_word.string
+                    # score
                     new_score = ((pow(i, param_lambda) * sentence.score) + log(
                         head_word.score)) / pow(i + 1, param_lambda)
+
                     new_string_double = StringDouble.StringDouble(new_sentence, new_score)
                     BeamSearch.heap_add(top_heap, beamK, new_string_double)
             self.k_heap = top_heap
-
+        # return result with largest score
         return nlargest(1, self.k_heap)[0]
 
     @staticmethod
     def heap_add(top_heap, beamK, string_double):
+        # if less than K just add
+        # if already K, replace better score with lowest
         if len(top_heap) < beamK:
             heappush(top_heap, string_double)
         elif string_double > top_heap[0]:

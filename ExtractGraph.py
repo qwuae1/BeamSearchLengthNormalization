@@ -9,6 +9,7 @@ class ExtractGraph:
 
     def __init__(self):
         # Extract the directed weighted graph, and save to [head_word][tail_word]:probability
+        # open file and split into sentences to words and get probability
         self.file = open(self.sentences_add, "r")
         for sentence in self.file:
             words = sentence.split()
@@ -37,13 +38,13 @@ class ExtractGraph:
         for head_word in self.counts:
             total = 0
             temp = []
-
+            # get total number of head - tail
             for tail_word in self.counts[head_word]:
                 total += self.counts[head_word][tail_word]
-
+            # get probability by dividing by total and append the result using StringDouble
             for tail_word in self.counts[head_word]:
                 self.counts[head_word][tail_word] /= total
                 temp.append(StringDouble.StringDouble(tail_word, self.counts[head_word][tail_word]))
-
+            # sort in decreasing order to get max K probability
             temp.sort(key=lambda x: x.score, reverse=True)
             self.graph[head_word] = temp

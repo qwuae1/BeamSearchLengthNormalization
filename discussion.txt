@@ -1,0 +1,16 @@
+lambda influence the length of the sentence
+score=logP/y^λ  and P<1
+so score <0 and when λ increases, the score will be higher compared to score=logP, so the length is more likely to be longer.
+when λ is small, the result is same. While λ increased larger than 1, the result is quite different than.
+
+when λ=1.5 the result is like
+-5.83196914992102		<s> It is expected . </s>
+-0.3595095222518627	<s> It is expected to the United States . </s>
+
+Play with prewords,I found only the last words matter. By using the same last word, I got same result.
+Which is flaw for this method. Some improvements needs
+-5.83196914992102		<s> Water is expected . </s>
+-0.3595095222518627	<s> Water is expected to the United States . </s>
+
+I also tried to play with the beamK, it is better within 10-100 the searched value will be around 1000 to 10000.
+If it beamK is larger ,more possibilities will be explored.But more memory and time is required. 
